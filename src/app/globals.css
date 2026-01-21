@@ -1,26 +1,463 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Al-Ittihad Club Theme Colors */
+  --ittihad-gold: #FFD700;
+  --ittihad-gold-light: #FFEA80;
+  --ittihad-gold-dark: #D4AF00;
+  --ittihad-black: #000000;
+  --ittihad-black-light: #1a1a1a;
+  --ittihad-white: #FFFFFF;
+  --ittihad-gray: #6B7280;
+  --ittihad-gray-light: #F3F4F6;
+
+  /* Light Mode Colors - Bright and Clean */
+  --background: #FFFFFF;
+  --background-secondary: #F8FAFC;
+  --foreground: #1F2937;
+  --foreground-secondary: #4B5563;
+  --primary: #FFD700;
+  --primary-foreground: #000000;
+  --secondary: #000000;
+  --secondary-foreground: #FFD700;
+  --accent: #FFD700;
+  --muted: #F1F5F9;
+  --muted-foreground: #64748B;
+  --border: #E2E8F0;
+  --ring: #FFD700;
+  --card: #FFFFFF;
+  --card-foreground: #1F2937;
+  --header-bg: #FFFFFF;
+  --table-header-bg: #1F2937;
+  --activity-bg: #F8FAFC;
+
+  /* Status Colors */
+  --success: #10B981;
+  --warning: #F59E0B;
+  --error: #EF4444;
+  --info: #3B82F6;
+
+  /* Sidebar Colors - Light Mode */
+  --sidebar-bg: #1F2937;
+  --sidebar-text: #F9FAFB;
+  --sidebar-text-muted: #9CA3AF;
+  --sidebar-border: #374151;
+  --sidebar-hover: rgba(255, 215, 0, 0.1);
+}
+
+.dark {
+  /* Dark Mode Colors */
+  --background: #0F172A;
+  --background-secondary: #1E293B;
+  --foreground: #F8FAFC;
+  --foreground-secondary: #94A3B8;
+  --muted: #334155;
+  --muted-foreground: #94A3B8;
+  --border: #475569;
+  --card: #1E293B;
+  --card-foreground: #F8FAFC;
+  --header-bg: #1E293B;
+  --table-header-bg: #0F172A;
+  --activity-bg: #334155;
+
+  /* Sidebar Colors - Dark Mode */
+  --sidebar-bg: #0F172A;
+  --sidebar-text: #F8FAFC;
+  --sidebar-text-muted: #94A3B8;
+  --sidebar-border: #1E293B;
+  --sidebar-hover: rgba(255, 215, 0, 0.15);
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-background-secondary: var(--background-secondary);
   --color-foreground: var(--foreground);
+  --color-foreground-secondary: var(--foreground-secondary);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-ittihad-gold: var(--ittihad-gold);
+  --color-ittihad-gold-light: var(--ittihad-gold-light);
+  --color-ittihad-gold-dark: var(--ittihad-gold-dark);
+  --color-ittihad-black: var(--ittihad-black);
+  --color-ittihad-black-light: var(--ittihad-black-light);
+  --color-ittihad-white: var(--ittihad-white);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  font-size: 18px;
+  line-height: 1.7;
+}
+
+/* Typography - Much Larger and Clearer */
+h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+h2 {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+p {
+  font-size: 1.125rem;
+  color: var(--foreground-secondary);
+}
+
+/* Override Tailwind text sizes for better readability */
+.text-xs {
+  font-size: 0.9rem !important;
+}
+
+.text-sm {
+  font-size: 1rem !important;
+}
+
+.text-base {
+  font-size: 1.125rem !important;
+}
+
+.text-lg {
+  font-size: 1.25rem !important;
+}
+
+.text-xl {
+  font-size: 1.5rem !important;
+}
+
+.text-2xl {
+  font-size: 1.875rem !important;
+}
+
+.text-3xl {
+  font-size: 2.25rem !important;
+}
+
+/* Light mode specific overrides */
+:root:not(.dark) .light-card {
+  background: var(--card) !important;
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+:root:not(.dark) .light-header {
+  background: var(--header-bg) !important;
+  border-bottom: 1px solid var(--border);
+}
+
+:root:not(.dark) .light-activity {
+  background: var(--activity-bg) !important;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--muted);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--ittihad-gold);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ittihad-gold-dark);
+}
+
+/* Tiger Stripes Pattern */
+.tiger-stripes {
+  background: repeating-linear-gradient(
+    90deg,
+    var(--ittihad-black) 0px,
+    var(--ittihad-black) 20px,
+    var(--ittihad-gold) 20px,
+    var(--ittihad-gold) 40px
+  );
+}
+
+.tiger-stripes-vertical {
+  background: repeating-linear-gradient(
+    0deg,
+    var(--ittihad-black) 0px,
+    var(--ittihad-black) 20px,
+    var(--ittihad-gold) 20px,
+    var(--ittihad-gold) 40px
+  );
+}
+
+/* Card Styles */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 10px 15px -3px rgba(255, 215, 0, 0.2);
+  border-color: var(--ittihad-gold);
+}
+
+/* Button Base Styles */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+
+.btn-primary {
+  background: var(--ittihad-gold);
+  color: var(--ittihad-black);
+}
+
+.btn-primary:hover {
+  background: var(--ittihad-gold-dark);
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background: var(--ittihad-black);
+  color: var(--ittihad-gold);
+  border: 2px solid var(--ittihad-gold);
+}
+
+.btn-secondary:hover {
+  background: var(--ittihad-gold);
+  color: var(--ittihad-black);
+}
+
+/* Input Styles */
+.input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  background: var(--background);
+  color: var(--foreground);
+  transition: all 0.2s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--ittihad-gold);
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
+}
+
+/* Badge Styles */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 9999px;
+}
+
+.badge-gold {
+  background: var(--ittihad-gold);
+  color: var(--ittihad-black);
+}
+
+.badge-black {
+  background: var(--ittihad-black);
+  color: var(--ittihad-gold);
+}
+
+/* Rating Stars */
+.rating {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.rating-star {
+  color: var(--ittihad-gold);
+}
+
+.rating-star-empty {
+  color: var(--muted-foreground);
+}
+
+/* Sidebar Styles */
+.sidebar {
+  background: var(--ittihad-black);
+  color: var(--ittihad-white);
+  min-height: 100vh;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  color: var(--ittihad-white);
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.sidebar-link:hover,
+.sidebar-link.active {
+  background: var(--ittihad-gold);
+  color: var(--ittihad-black);
+}
+
+/* Table Styles */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  background: var(--ittihad-black);
+  color: var(--ittihad-gold);
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+}
+
+.table td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--foreground);
+}
+
+.table tr:hover {
+  background: rgba(255, 215, 0, 0.05);
+}
+
+/* Progress Bar */
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: var(--muted);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: var(--ittihad-gold);
+  border-radius: 9999px;
+  transition: width 0.3s ease;
+}
+
+/* Stat Card */
+.stat-card {
+  background: linear-gradient(135deg, var(--ittihad-black) 0%, var(--ittihad-black-light) 100%);
+  color: var(--ittihad-white);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border-left: 4px solid var(--ittihad-gold);
+}
+
+.stat-card-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--ittihad-gold);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse-gold {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(255, 215, 0, 0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+.animate-pulse-gold {
+  animation: pulse-gold 2s infinite;
+}
+
+/* Main Content Area - offset for sidebar */
+.main-content {
+  margin-left: 0;
+}
+
+@media (min-width: 1024px) {
+  .main-content {
+    margin-left: 256px;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .sidebar,
+  .no-print {
+    display: none !important;
+  }
+
+  .card {
+    box-shadow: none;
+    border: 1px solid #000;
+  }
 }
