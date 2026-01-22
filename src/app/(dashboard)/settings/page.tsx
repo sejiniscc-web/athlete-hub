@@ -405,10 +405,10 @@ export default function SettingsPage() {
   })
 
   const [profile, setProfile] = useState({
-    full_name: 'Hala Jambi',
-    email: 'Hjambi@ittihadclub.sa',
+    full_name: currentUser.full_name,
+    email: currentUser.email,
     phone: '+966 5xxxxxxxx',
-    role: 'Super Admin',
+    role: ROLE_DISPLAY_NAMES[currentUser.role],
     language: 'en',
     timezone: 'Asia/Riyadh',
   })
@@ -455,6 +455,16 @@ export default function SettingsPage() {
       return roleMatch && statusMatch
     })
   }, [visibleUsers, filterRole, filterStatus])
+
+  // Update profile when currentUser changes (e.g., after switch user)
+  useEffect(() => {
+    setProfile(prev => ({
+      ...prev,
+      full_name: currentUser.full_name,
+      email: currentUser.email,
+      role: ROLE_DISPLAY_NAMES[currentUser.role],
+    }))
+  }, [currentUser.id, currentUser.full_name, currentUser.email, currentUser.role])
 
   const getRoleIcon = (role: UserRole) => {
     switch (role) {
