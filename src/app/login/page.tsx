@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { mockUsers } from '@/context/UserContext'
+import { findUserByEmail } from '@/context/UserContext'
 import { Mail, Lock, Eye, EyeOff, ArrowLeft, Loader2, Shield, Users, Activity, BarChart3 } from 'lucide-react'
 
 export default function LoginPage() {
@@ -23,7 +23,7 @@ export default function LoginPage() {
 
     try {
       // Find user by email (no password check - demo mode)
-      const user = mockUsers.find(u => u.email.toLowerCase() === email.toLowerCase())
+      const user = findUserByEmail(email)
 
       if (!user) {
         setError('User not found. Please check your email.')

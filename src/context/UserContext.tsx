@@ -35,13 +35,13 @@ export const mockUsers: User[] = [
   },
   {
     id: '1',
-    email: 'admin@alittihad.com',
+    email: 'Hjambi@ittihadclub.sa',
     full_name: 'Hala Jambi',
     role: 'super_admin',
     is_active: true,
     created_at: '2024-01-01',
     updated_at: '2024-01-01',
-    assigned_sports: [], // Empty = all (for admins it doesn't matter due to hasFullAccess)
+    assigned_sports: [],
     assigned_squads: [],
   },
   {
@@ -226,6 +226,58 @@ export const mockUsers: User[] = [
 const CURRENT_USER_KEY = 'athlete_hub_current_user'
 const ORIGINAL_USER_KEY = 'athlete_hub_original_user'
 const SWITCHED_USER_KEY = 'athlete_hub_switched_user'
+const CUSTOM_USERS_KEY = 'athlete_hub_custom_users'
+
+// Get all users (mockUsers + custom users from localStorage)
+export function getAllUsers(): User[] {
+  if (typeof window === 'undefined') return mockUsers
+
+  try {
+    const customUsersJson = localStorage.getItem(CUSTOM_USERS_KEY)
+    if (customUsersJson) {
+      const customUsers: User[] = JSON.parse(customUsersJson)
+      // Merge, avoiding duplicates by email
+      const allUsers = [...mockUsers]
+      customUsers.forEach(cu => {
+        if (!allUsers.find(u => u.email.toLowerCase() === cu.email.toLowerCase())) {
+          allUsers.push(cu)
+        }
+      })
+      return allUsers
+    }
+  } catch (e) {
+    console.error('Error loading custom users:', e)
+  }
+  return mockUsers
+}
+
+// Add a new user to localStorage
+export function addCustomUser(user: User): void {
+  if (typeof window === 'undefined') return
+
+  try {
+    const customUsersJson = localStorage.getItem(CUSTOM_USERS_KEY)
+    const customUsers: User[] = customUsersJson ? JSON.parse(customUsersJson) : []
+
+    // Check if user already exists
+    const existingIndex = customUsers.findIndex(u => u.email.toLowerCase() === user.email.toLowerCase())
+    if (existingIndex >= 0) {
+      customUsers[existingIndex] = user // Update existing
+    } else {
+      customUsers.push(user) // Add new
+    }
+
+    localStorage.setItem(CUSTOM_USERS_KEY, JSON.stringify(customUsers))
+  } catch (e) {
+    console.error('Error saving custom user:', e)
+  }
+}
+
+// Find user by email (searches both mockUsers and custom users)
+export function findUserByEmail(email: string): User | undefined {
+  const allUsers = getAllUsers()
+  return allUsers.find(u => u.email.toLowerCase() === email.toLowerCase())
+}
 
 export function UserProvider({ children }: { children: ReactNode }) {
   const [currentUser, setCurrentUserState] = useState<User | null>(null)

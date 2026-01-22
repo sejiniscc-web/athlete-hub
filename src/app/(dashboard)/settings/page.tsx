@@ -45,7 +45,7 @@ import {
   canSwitchUser,
   isSystemAdmin
 } from '@/types/database'
-import { useUser, mockUsers } from '@/context/UserContext'
+import { useUser, mockUsers, addCustomUser } from '@/context/UserContext'
 
 // Mock users data with assigned sports and squads
 const allUsers: User[] = [
@@ -1607,7 +1607,22 @@ export default function SettingsPage() {
           squadsData={squadsData}
           onClose={() => setShowAddUserModal(false)}
           onSave={(userData) => {
-            console.log('Save user:', userData)
+            // Create new user object
+            const newUser: User = {
+              id: `user-${Date.now()}`,
+              email: userData.email || '',
+              full_name: userData.full_name || '',
+              phone: userData.phone || '',
+              role: (userData.role || 'viewer') as UserRole,
+              is_active: true,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+              assigned_sports: userData.assigned_sports || [],
+              assigned_squads: userData.assigned_squads || [],
+            }
+            // Save to localStorage so they can login
+            addCustomUser(newUser)
+            console.log('User added and can now login:', newUser.email)
             setShowAddUserModal(false)
           }}
         />
