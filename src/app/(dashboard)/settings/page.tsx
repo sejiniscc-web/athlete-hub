@@ -51,18 +51,19 @@ import { useUser, mockUsers, addCustomUser, getAllUsers, updateUser, updateUserP
 
 export default function SettingsPage() {
   // Get current user from context
-  const { currentUser: contextUser, originalUser, isSwitchedUser, switchToUser, switchBack, canSwitchUser: userCanSwitch } = useUser()
+  const { currentUser: contextUser, originalUser, isSwitchedUser, switchToUser, switchBack, canSwitchUser: userCanSwitch, isLoading: userLoading } = useUser()
 
-  // Fallback for when context is loading
-  const currentUser: User = contextUser || {
-    id: 'default',
-    email: 'admin@ittihadclub.sa',
-    full_name: 'Admin',
-    role: 'super_admin',
-    is_active: true,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
+  // Show loading while user is being loaded
+  if (userLoading || !contextUser) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="animate-spin w-8 h-8 border-4 border-[#FFD700] border-t-transparent rounded-full" />
+      </div>
+    )
   }
+
+  // Now we're sure contextUser exists
+  const currentUser: User = contextUser
 
   const [activeTab, setActiveTab] = useState('profile')
   const [showPassword, setShowPassword] = useState(false)

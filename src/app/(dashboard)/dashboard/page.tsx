@@ -46,14 +46,22 @@ const upcomingEvents = [
 ]
 
 export default function DashboardPage() {
-  const { currentUser } = useUser()
+  const { currentUser, isLoading } = useUser()
+
+  if (isLoading || !currentUser) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="animate-spin w-8 h-8 border-4 border-[#FFD700] border-t-transparent rounded-full" />
+      </div>
+    )
+  }
 
   return (
     <div>
       <Header
         title="Dashboard"
-        userName={currentUser?.full_name || 'User'}
-        userRole={currentUser ? ROLE_DISPLAY_NAMES[currentUser.role] : 'User'}
+        userName={currentUser.full_name}
+        userRole={ROLE_DISPLAY_NAMES[currentUser.role]}
       />
 
       <div className="p-6 space-y-6">
