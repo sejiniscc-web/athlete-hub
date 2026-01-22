@@ -426,13 +426,16 @@ export default function SettingsPage() {
 
   // Filter tabs based on user role
   // - System tab: only for super_admin and system_admin
-  // - Switch User tab: ONLY for system_admin
+  // - Switch User tab: ONLY for system_admin (check originalUser when switched)
   const tabs = allTabs.filter(tab => {
     if (tab.systemAdminOnly) {
-      return currentUser.role === 'system_admin'
+      // When switched, check the original user's role, not the current one
+      const roleToCheck = originalUser?.role || currentUser.role
+      return roleToCheck === 'system_admin'
     }
     if (tab.adminOnly) {
-      return currentUser.role === 'super_admin' || currentUser.role === 'system_admin'
+      const roleToCheck = originalUser?.role || currentUser.role
+      return roleToCheck === 'super_admin' || roleToCheck === 'system_admin'
     }
     return true
   })
