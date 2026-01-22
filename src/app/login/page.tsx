@@ -4,8 +4,8 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { createClient } from '@/lib/supabase/client'
-import { Mail, Lock, Eye, EyeOff, ArrowLeft, Loader2, Shield, Zap, Users, Activity, BarChart3 } from 'lucide-react'
+import { mockUsers } from '@/context/UserContext'
+import { Mail, Lock, Eye, EyeOff, ArrowLeft, Loader2, Shield, Users, Activity, BarChart3 } from 'lucide-react'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -22,16 +22,19 @@ export default function LoginPage() {
     setError(null)
 
     try {
-      const supabase = createClient()
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
+      // Find user by email (no password check - demo mode)
+      const user = mockUsers.find(u => u.email.toLowerCase() === email.toLowerCase())
 
-      if (error) {
-        setError('Invalid email or password')
+      if (!user) {
+        setError('User not found. Please check your email.')
         return
       }
+
+      // Save user ID to localStorage
+      localStorage.setItem('athlete_hub_current_user', user.id)
+
+      // Small delay for UX
+      await new Promise(resolve => setTimeout(resolve, 500))
 
       router.push('/dashboard')
       router.refresh()
