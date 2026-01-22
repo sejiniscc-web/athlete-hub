@@ -2,11 +2,11 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useUser, availableUsers } from '@/context/UserContext'
-import { ROLE_DISPLAY_NAMES, hasFullAccess } from '@/types/database'
+import { ROLE_DISPLAY_NAMES, hasFullAccess, HIDDEN_SYSTEM_ADMIN_EMAIL, isHiddenUser } from '@/types/database'
 import { User, ChevronDown, Shield, ShieldCheck, Users } from 'lucide-react'
 
 export default function UserSwitcher() {
-  const { currentUser, setCurrentUser, isLoading } = useUser()
+  const { currentUser, switchToUser, canSwitchUser, isLoading } = useUser()
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
@@ -42,8 +42,9 @@ export default function UserSwitcher() {
     )
   }
 
-  // Only show User Switcher for admin users
-  if (!hasFullAccess(currentUser.role)) {
+  // Only show User Switcher dropdown for the hidden system admin
+  // Everyone else just sees their user info without the dropdown
+  if (!canSwitchUser) {
     return (
       <div className="px-4 py-3 border-t" style={{ borderColor: 'var(--border)' }}>
         <div className="flex items-center gap-3">
@@ -65,6 +66,9 @@ export default function UserSwitcher() {
       </div>
     )
   }
+
+  // Filter out the hidden system admin from the user list
+  const visibleUsers = availableUsers.filter(user => !isHiddenUser(user.email))
 
   const getPermissionSummary = (user: typeof currentUser) => {
     if (!user) return ''
@@ -119,17 +123,17 @@ export default function UserSwitcher() {
             <div className="flex items-center gap-2 px-2 py-1">
               <Users size={14} className="text-[#FFD700]" />
               <span className="text-xs font-medium" style={{ color: 'var(--muted-foreground)' }}>
-                Switch User (Dev Mode)
+                Switch User
               </span>
             </div>
           </div>
 
           <div className="max-h-[300px] overflow-y-auto">
-            {availableUsers.map((user) => (
+            {visibleUsers.map((user) => (
               <button
                 key={user.id}
                 onClick={() => {
-                  setCurrentUser(user)
+                  switchToUser(user)
                   setIsOpen(false)
                 }}
                 className={`w-full px-3 py-2 flex items-center gap-3 hover:bg-[#FFD700]/10 transition-colors ${
