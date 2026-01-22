@@ -2,6 +2,8 @@
 
 import Header from '@/components/ui/Header'
 import StatCard from '@/components/ui/StatCard'
+import { useUser } from '@/context/UserContext'
+import { ROLE_DISPLAY_NAMES } from '@/types/database'
 import {
   Users,
   Activity,
@@ -44,9 +46,15 @@ const upcomingEvents = [
 ]
 
 export default function DashboardPage() {
+  const { currentUser } = useUser()
+
   return (
     <div>
-      <Header title="Dashboard" userName="Admin User" userRole="System Admin" />
+      <Header
+        title="Dashboard"
+        userName={currentUser?.full_name || 'User'}
+        userRole={currentUser ? ROLE_DISPLAY_NAMES[currentUser.role] : 'User'}
+      />
 
       <div className="p-6 space-y-6">
         {/* Stats Grid */}

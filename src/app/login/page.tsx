@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { findUserByEmail } from '@/context/UserContext'
+import { authenticateUser } from '@/context/UserContext'
 import { Mail, Lock, Eye, EyeOff, ArrowLeft, Loader2, Shield, Users, Activity, BarChart3 } from 'lucide-react'
 
 export default function LoginPage() {
@@ -43,16 +43,16 @@ export default function LoginPage() {
     setError(null)
 
     try {
-      // Find user by email (no password check - demo mode)
-      const user = findUserByEmail(email)
+      // Authenticate user with email and password
+      const result = authenticateUser(email, password)
 
-      if (!user) {
-        setError('User not found. Please check your email.')
+      if (!result.success || !result.user) {
+        setError(result.error || 'Authentication failed')
         return
       }
 
       // Save user ID to localStorage
-      localStorage.setItem('athlete_hub_current_user', user.id)
+      localStorage.setItem('athlete_hub_current_user', result.user.id)
 
       // Small delay for UX
       await new Promise(resolve => setTimeout(resolve, 500))

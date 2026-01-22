@@ -20,12 +20,16 @@ interface UserContextType {
 
 const UserContext = createContext<UserContextType | undefined>(undefined)
 
+// Default password for mock users who don't have a specific password
+const DEFAULT_PASSWORD = 'Welcome@123'
+
 // Mock users for development/testing
 export const mockUsers: User[] = [
   {
     id: '0',
     email: 'abdul.sejini@gmail.com',
     full_name: 'Abdulelah Sejini',
+    password: 'Admin@123',
     role: 'system_admin',
     is_active: true,
     created_at: '2024-01-01',
@@ -37,6 +41,7 @@ export const mockUsers: User[] = [
     id: '1',
     email: 'Hjambi@ittihadclub.sa',
     full_name: 'Hala Jambi',
+    password: 'Welcome@123',
     role: 'super_admin',
     is_active: true,
     created_at: '2024-01-01',
@@ -48,6 +53,7 @@ export const mockUsers: User[] = [
     id: '2',
     email: 'football.coach@alittihad.com',
     full_name: 'Ahmad Football Coach',
+    password: DEFAULT_PASSWORD,
     role: 'sport_coach',
     is_active: true,
     created_at: '2024-01-01',
@@ -59,6 +65,7 @@ export const mockUsers: User[] = [
     id: '3',
     email: 'basketball.coach@alittihad.com',
     full_name: 'Mohammed Basketball Coach',
+    password: DEFAULT_PASSWORD,
     role: 'sport_coach',
     is_active: true,
     created_at: '2024-01-01',
@@ -70,6 +77,7 @@ export const mockUsers: User[] = [
     id: '4',
     email: 'fitness@alittihad.com',
     full_name: 'Omar Fitness',
+    password: DEFAULT_PASSWORD,
     role: 'fitness_coach',
     is_active: true,
     created_at: '2024-01-01',
@@ -81,6 +89,7 @@ export const mockUsers: User[] = [
     id: '5',
     email: 'doctor@alittihad.com',
     full_name: 'Dr. Saeed',
+    password: DEFAULT_PASSWORD,
     role: 'doctor',
     is_active: true,
     created_at: '2024-01-01',
@@ -92,6 +101,7 @@ export const mockUsers: User[] = [
     id: '6',
     email: 'nutritionist@alittihad.com',
     full_name: 'Fatima Nutritionist',
+    password: DEFAULT_PASSWORD,
     role: 'nutritionist',
     is_active: true,
     created_at: '2024-01-01',
@@ -103,6 +113,7 @@ export const mockUsers: User[] = [
     id: '7',
     email: 'psychologist@alittihad.com',
     full_name: 'Dr. Noura',
+    password: DEFAULT_PASSWORD,
     role: 'psychologist',
     is_active: true,
     created_at: '2024-01-01',
@@ -116,6 +127,7 @@ export const mockUsers: User[] = [
     email: 'Abdulmoeen.kl@gmail.com',
     full_name: 'Abdulmoien Kalantan',
     phone: '+966 5xxxxxxxx',
+    password: DEFAULT_PASSWORD,
     role: 'physiotherapist',
     is_active: true,
     created_at: '2024-01-15',
@@ -128,6 +140,7 @@ export const mockUsers: User[] = [
     email: 'mohamedberriri.kine@gmail.com',
     full_name: 'Mohammed Berrery',
     phone: '+966 5xxxxxxxx',
+    password: DEFAULT_PASSWORD,
     role: 'physiotherapist',
     is_active: true,
     created_at: '2024-01-15',
@@ -140,6 +153,7 @@ export const mockUsers: User[] = [
     email: 'hmalshareef@ittihadclub.sa',
     full_name: 'Hassan Alsharief',
     phone: '+966 5xxxxxxxx',
+    password: DEFAULT_PASSWORD,
     role: 'physiotherapist',
     is_active: true,
     created_at: '2024-02-01',
@@ -152,6 +166,7 @@ export const mockUsers: User[] = [
     email: 'Saadyahya0505@gmail.com',
     full_name: 'Saad Alqahtani',
     phone: '+966 5xxxxxxxx',
+    password: DEFAULT_PASSWORD,
     role: 'physiotherapist',
     is_active: true,
     created_at: '2024-02-15',
@@ -164,6 +179,7 @@ export const mockUsers: User[] = [
     email: 'lolo.oskaz@gmail.com',
     full_name: 'Lara Kazim',
     phone: '+966 5xxxxxxxx',
+    password: DEFAULT_PASSWORD,
     role: 'physiotherapist',
     is_active: true,
     created_at: '2024-03-01',
@@ -176,6 +192,7 @@ export const mockUsers: User[] = [
     email: 'Smalasmari@ittihadclub.sa',
     full_name: 'Saed Alasmari',
     phone: '+966 5xxxxxxxx',
+    password: DEFAULT_PASSWORD,
     role: 'physiotherapist',
     is_active: true,
     created_at: '2024-03-15',
@@ -189,6 +206,7 @@ export const mockUsers: User[] = [
     email: 'arab-30@hotmail.com',
     full_name: 'Abdulrahman Arab',
     phone: '+966 5xxxxxxxx',
+    password: DEFAULT_PASSWORD,
     role: 'fitness_coach',
     is_active: true,
     created_at: '2024-01-10',
@@ -201,6 +219,7 @@ export const mockUsers: User[] = [
     email: 'the_loard@hotmail.com',
     full_name: 'Faisal Alsharief',
     phone: '+966 5xxxxxxxx',
+    password: DEFAULT_PASSWORD,
     role: 'fitness_coach',
     is_active: true,
     created_at: '2024-01-10',
@@ -213,6 +232,7 @@ export const mockUsers: User[] = [
     email: 'rlanca@ittihadclub.sa',
     full_name: 'Rui Lanca',
     phone: '+966 5xxxxxxxx',
+    password: DEFAULT_PASSWORD,
     role: 'fitness_coach',
     is_active: true,
     created_at: '2024-02-01',
@@ -236,13 +256,28 @@ export function getAllUsers(): User[] {
     const customUsersJson = localStorage.getItem(CUSTOM_USERS_KEY)
     if (customUsersJson) {
       const customUsers: User[] = JSON.parse(customUsersJson)
-      // Merge, avoiding duplicates by email
-      const allUsers = [...mockUsers]
+      // Merge: custom users override mock users with the same ID
+      const allUsers: User[] = []
+
+      // First add mock users, but check if they have an override in custom users
+      mockUsers.forEach(mockUser => {
+        const customOverride = customUsers.find(cu => cu.id === mockUser.id)
+        if (customOverride) {
+          // Use the custom (updated) version
+          allUsers.push(customOverride)
+        } else {
+          allUsers.push(mockUser)
+        }
+      })
+
+      // Then add new custom users (not overrides)
       customUsers.forEach(cu => {
-        if (!allUsers.find(u => u.email.toLowerCase() === cu.email.toLowerCase())) {
+        const isOverride = mockUsers.some(mu => mu.id === cu.id)
+        if (!isOverride) {
           allUsers.push(cu)
         }
       })
+
       return allUsers
     }
   } catch (e) {
@@ -279,6 +314,113 @@ export function findUserByEmail(email: string): User | undefined {
   return allUsers.find(u => u.email.toLowerCase() === email.toLowerCase())
 }
 
+// Find user by ID (searches both mockUsers and custom users)
+export function findUserById(id: string): User | undefined {
+  const allUsers = getAllUsers()
+  return allUsers.find(u => u.id === id)
+}
+
+// Update an existing user
+export function updateUser(user: User): void {
+  if (typeof window === 'undefined') return
+
+  try {
+    // Check if it's a mock user (we store updates in custom users)
+    const isMockUser = mockUsers.some(u => u.id === user.id)
+
+    const customUsersJson = localStorage.getItem(CUSTOM_USERS_KEY)
+    const customUsers: User[] = customUsersJson ? JSON.parse(customUsersJson) : []
+
+    if (isMockUser) {
+      // For mock users, we store the updated version in custom users (overrides mock)
+      const existingIndex = customUsers.findIndex(u => u.id === user.id)
+      if (existingIndex >= 0) {
+        customUsers[existingIndex] = user
+      } else {
+        customUsers.push(user)
+      }
+    } else {
+      // For custom users, update directly
+      const existingIndex = customUsers.findIndex(u => u.id === user.id)
+      if (existingIndex >= 0) {
+        customUsers[existingIndex] = user
+      }
+    }
+
+    localStorage.setItem(CUSTOM_USERS_KEY, JSON.stringify(customUsers))
+  } catch (e) {
+    console.error('Error updating user:', e)
+  }
+}
+
+// Update user password
+export function updateUserPassword(userId: string, newPassword: string): boolean {
+  if (typeof window === 'undefined') return false
+
+  try {
+    const user = findUserById(userId)
+    if (!user) return false
+
+    const updatedUser = { ...user, password: newPassword, updated_at: new Date().toISOString() }
+    updateUser(updatedUser)
+    return true
+  } catch (e) {
+    console.error('Error updating password:', e)
+    return false
+  }
+}
+
+// Delete a user from localStorage
+export function deleteUser(userId: string): boolean {
+  if (typeof window === 'undefined') return false
+
+  try {
+    const customUsersJson = localStorage.getItem(CUSTOM_USERS_KEY)
+    const customUsers: User[] = customUsersJson ? JSON.parse(customUsersJson) : []
+
+    const filteredUsers = customUsers.filter(u => u.id !== userId)
+    localStorage.setItem(CUSTOM_USERS_KEY, JSON.stringify(filteredUsers))
+    return true
+  } catch (e) {
+    console.error('Error deleting user:', e)
+    return false
+  }
+}
+
+// Get default password constant
+export function getDefaultPassword(): string {
+  return DEFAULT_PASSWORD
+}
+
+// Validate user password
+export function validatePassword(user: User, password: string): boolean {
+  // Check if user has a password set
+  if (user.password) {
+    return user.password === password
+  }
+  // If no password set, use default password
+  return password === DEFAULT_PASSWORD
+}
+
+// Authenticate user with email and password
+export function authenticateUser(email: string, password: string): { success: boolean; user?: User; error?: string } {
+  const user = findUserByEmail(email)
+
+  if (!user) {
+    return { success: false, error: 'User not found. Please check your email.' }
+  }
+
+  if (!user.is_active) {
+    return { success: false, error: 'Your account is inactive. Please contact administrator.' }
+  }
+
+  if (!validatePassword(user, password)) {
+    return { success: false, error: 'Invalid password. Please try again.' }
+  }
+
+  return { success: true, user }
+}
+
 export function UserProvider({ children }: { children: ReactNode }) {
   const [currentUser, setCurrentUserState] = useState<User | null>(null)
   const [originalUser, setOriginalUserState] = useState<User | null>(null)
@@ -290,9 +432,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
     const savedOriginalUserId = localStorage.getItem(ORIGINAL_USER_KEY)
     const savedSwitchedUserId = localStorage.getItem(SWITCHED_USER_KEY)
 
+    // Get all users including custom users from localStorage
+    const allUsers = getAllUsers()
+
     // First load the original user
     if (savedOriginalUserId) {
-      const origUser = mockUsers.find(u => u.id === savedOriginalUserId)
+      const origUser = allUsers.find(u => u.id === savedOriginalUserId)
       if (origUser) {
         setOriginalUserState(origUser)
       }
@@ -301,30 +446,31 @@ export function UserProvider({ children }: { children: ReactNode }) {
     // Then load the current user (may be switched)
     if (savedSwitchedUserId && savedOriginalUserId) {
       // User is in switched mode
-      const switchedUser = mockUsers.find(u => u.id === savedSwitchedUserId)
-      const origUser = mockUsers.find(u => u.id === savedOriginalUserId)
+      const switchedUser = allUsers.find(u => u.id === savedSwitchedUserId)
+      const origUser = allUsers.find(u => u.id === savedOriginalUserId)
       if (switchedUser && origUser) {
         setCurrentUserState(switchedUser)
         setOriginalUserState(origUser)
       } else {
-        // Reset to default
-        const defaultUser = mockUsers.find(u => u.role === 'super_admin') || mockUsers[1]
-        setCurrentUserState(defaultUser)
+        // Invalid switched state - clear everything
+        localStorage.removeItem(ORIGINAL_USER_KEY)
+        localStorage.removeItem(SWITCHED_USER_KEY)
+        localStorage.removeItem(CURRENT_USER_KEY)
+        setCurrentUserState(null)
         setOriginalUserState(null)
       }
     } else if (savedUserId) {
-      const user = mockUsers.find(u => u.id === savedUserId)
+      const user = allUsers.find(u => u.id === savedUserId)
       if (user) {
         setCurrentUserState(user)
       } else {
-        // Default to super_admin if saved user not found
-        const defaultUser = mockUsers.find(u => u.role === 'super_admin') || mockUsers[1]
-        setCurrentUserState(defaultUser)
+        // User ID was saved but user not found - clear it
+        localStorage.removeItem(CURRENT_USER_KEY)
+        setCurrentUserState(null)
       }
     } else {
-      // Default to super_admin (not system_admin)
-      const defaultUser = mockUsers.find(u => u.role === 'super_admin') || mockUsers[1]
-      setCurrentUserState(defaultUser)
+      // No user logged in - keep currentUser as null
+      setCurrentUserState(null)
     }
     setIsLoading(false)
   }, [])

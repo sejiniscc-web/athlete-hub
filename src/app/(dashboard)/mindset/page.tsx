@@ -7,7 +7,8 @@ import Button from '@/components/ui/Button'
 import RatingInput from '@/components/ui/RatingInput'
 import TrendIndicator, { TrendArrow } from '@/components/ui/TrendIndicator'
 import RecordHistory from '@/components/ui/RecordHistory'
-import { calculateTrend, SimpleRecordEntry, TrendData } from '@/types/database'
+import { calculateTrend, SimpleRecordEntry, TrendData, ROLE_DISPLAY_NAMES } from '@/types/database'
+import { useUser } from '@/context/UserContext'
 import { Plus, Brain, Smile, Frown, Meh, ChevronDown, ChevronUp, History, TrendingUp, TrendingDown, X } from 'lucide-react'
 
 // Athlete mindset history data
@@ -397,6 +398,7 @@ const calculateWellnessScore = (record: MindsetRecord): number => {
 }
 
 export default function MindsetPage() {
+  const { currentUser } = useUser()
   const [showAddModal, setShowAddModal] = useState(false)
   const [expandedRows, setExpandedRows] = useState<Record<string, boolean>>({})
   const [historyModal, setHistoryModal] = useState<{ athlete: ProcessedMindset } | null>(null)
@@ -658,7 +660,11 @@ export default function MindsetPage() {
 
   return (
     <div>
-      <Header title="Mindset" userName="Admin User" userRole="System Admin" />
+      <Header
+        title="Mindset"
+        userName={currentUser?.full_name || 'User'}
+        userRole={currentUser ? ROLE_DISPLAY_NAMES[currentUser.role] : 'User'}
+      />
 
       <div className="p-6">
         {/* Stats */}

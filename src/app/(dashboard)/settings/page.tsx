@@ -47,227 +47,7 @@ import {
   isHiddenUser,
   HIDDEN_SYSTEM_ADMIN_EMAIL
 } from '@/types/database'
-import { useUser, mockUsers, addCustomUser, getAllUsers } from '@/context/UserContext'
-
-// Mock users data with assigned sports and squads
-const allUsers: User[] = [
-  {
-    id: 'sys-admin-1',
-    email: 'abdul.sejini@gmail.com',
-    full_name: 'Abdulelah Sejini',
-    role: 'system_admin',
-    is_active: true,
-    last_login: '2025-01-22T10:00:00Z',
-    created_at: '2024-01-01T00:00:00Z',
-    updated_at: '2025-01-22T10:00:00Z',
-    assigned_sports: [], // Full access - system_admin has ALL permissions
-    assigned_squads: [],
-  },
-  {
-    id: 'super-admin-1',
-    email: 'Hjambi@ittihadclub.sa',
-    full_name: 'Hala Jambi',
-    role: 'super_admin',
-    is_active: true,
-    last_login: '2025-01-21T09:30:00Z',
-    created_at: '2024-02-15T00:00:00Z',
-    updated_at: '2025-01-21T09:30:00Z',
-    assigned_sports: [], // Full access
-    assigned_squads: [],
-  },
-  {
-    id: 'admin-1',
-    email: 'admin@ittihadclub.sa',
-    full_name: 'Ahmed Al-Admin',
-    role: 'admin',
-    is_active: true,
-    last_login: '2025-01-20T14:00:00Z',
-    created_at: '2024-03-10T00:00:00Z',
-    updated_at: '2025-01-20T14:00:00Z',
-    assigned_sports: [], // Full access
-    assigned_squads: [],
-  },
-  {
-    id: 'doctor-1',
-    email: 'doctor@ittihadclub.sa',
-    full_name: 'Dr. Mohammed Al-Saeed',
-    phone: '+966 5xxxxxxxx',
-    role: 'doctor',
-    is_active: true,
-    last_login: '2025-01-21T08:00:00Z',
-    created_at: '2024-04-05T00:00:00Z',
-    updated_at: '2025-01-21T08:00:00Z',
-    assigned_sports: ['football', 'basketball'],
-    assigned_squads: ['all'],
-  },
-  {
-    id: 'fitness-1',
-    email: 'fitness@ittihadclub.sa',
-    full_name: 'Khalid Al-Fitness',
-    role: 'fitness_coach',
-    is_active: true,
-    last_login: '2025-01-21T07:00:00Z',
-    created_at: '2024-05-20T00:00:00Z',
-    updated_at: '2025-01-21T07:00:00Z',
-    assigned_sports: ['all'],
-    assigned_squads: ['first_team'],
-  },
-  {
-    id: 'coach-1',
-    email: 'coach@ittihadclub.sa',
-    full_name: 'Saad Al-Coach',
-    role: 'sport_coach',
-    is_active: true,
-    last_login: '2025-01-19T16:00:00Z',
-    created_at: '2024-06-01T00:00:00Z',
-    updated_at: '2025-01-19T16:00:00Z',
-    assigned_sports: ['football'],
-    assigned_squads: ['first_team', 'u21'],
-  },
-  {
-    id: 'nutritionist-1',
-    email: 'nutrition@ittihadclub.sa',
-    full_name: 'Fatima Al-Nutrition',
-    role: 'nutritionist',
-    is_active: false,
-    last_login: '2025-01-10T12:00:00Z',
-    created_at: '2024-07-15T00:00:00Z',
-    updated_at: '2025-01-10T12:00:00Z',
-    assigned_sports: ['all'],
-    assigned_squads: ['first_team', 'u21'],
-  },
-  {
-    id: 'psych-1',
-    email: 'psych@ittihadclub.sa',
-    full_name: 'Dr. Sara Al-Psychology',
-    role: 'psychologist',
-    is_active: true,
-    last_login: '2025-01-21T11:00:00Z',
-    created_at: '2024-08-01T00:00:00Z',
-    updated_at: '2025-01-21T11:00:00Z',
-    assigned_sports: ['football'],
-    assigned_squads: ['all'],
-  },
-  // Physiotherapists
-  {
-    id: 'physio-1',
-    email: 'Abdulmoeen.kl@gmail.com',
-    full_name: 'Abdulmoien Kalantan',
-    phone: '+966 5xxxxxxxx',
-    role: 'physiotherapist',
-    is_active: true,
-    last_login: '2025-01-21T08:30:00Z',
-    created_at: '2024-01-15T00:00:00Z',
-    updated_at: '2025-01-21T08:30:00Z',
-    assigned_sports: ['football'],
-    assigned_squads: ['first_team'],
-  },
-  {
-    id: 'physio-2',
-    email: 'mohamedberriri.kine@gmail.com',
-    full_name: 'Mohammed Berrery',
-    phone: '+966 5xxxxxxxx',
-    role: 'physiotherapist',
-    is_active: true,
-    last_login: '2025-01-21T09:00:00Z',
-    created_at: '2024-01-15T00:00:00Z',
-    updated_at: '2025-01-21T09:00:00Z',
-    assigned_sports: ['football'],
-    assigned_squads: ['first_team', 'u21'],
-  },
-  {
-    id: 'physio-3',
-    email: 'hmalshareef@ittihadclub.sa',
-    full_name: 'Hassan Alsharief',
-    phone: '+966 5xxxxxxxx',
-    role: 'physiotherapist',
-    is_active: true,
-    last_login: '2025-01-20T16:00:00Z',
-    created_at: '2024-02-01T00:00:00Z',
-    updated_at: '2025-01-20T16:00:00Z',
-    assigned_sports: ['football'],
-    assigned_squads: ['first_team'],
-  },
-  {
-    id: 'physio-4',
-    email: 'Saadyahya0505@gmail.com',
-    full_name: 'Saad Alqahtani',
-    phone: '+966 5xxxxxxxx',
-    role: 'physiotherapist',
-    is_active: true,
-    last_login: '2025-01-21T07:30:00Z',
-    created_at: '2024-02-15T00:00:00Z',
-    updated_at: '2025-01-21T07:30:00Z',
-    assigned_sports: ['football'],
-    assigned_squads: ['u21'],
-  },
-  {
-    id: 'physio-5',
-    email: 'lolo.oskaz@gmail.com',
-    full_name: 'Lara Kazim',
-    phone: '+966 5xxxxxxxx',
-    role: 'physiotherapist',
-    is_active: true,
-    last_login: '2025-01-21T10:00:00Z',
-    created_at: '2024-03-01T00:00:00Z',
-    updated_at: '2025-01-21T10:00:00Z',
-    assigned_sports: ['all'],
-    assigned_squads: ['first_team'],
-  },
-  {
-    id: 'physio-6',
-    email: 'Smalasmari@ittihadclub.sa',
-    full_name: 'Saed Alasmari',
-    phone: '+966 5xxxxxxxx',
-    role: 'physiotherapist',
-    is_active: true,
-    last_login: '2025-01-20T14:30:00Z',
-    created_at: '2024-03-15T00:00:00Z',
-    updated_at: '2025-01-20T14:30:00Z',
-    assigned_sports: ['football'],
-    assigned_squads: ['all'],
-  },
-  // Strength and Condition Coaches
-  {
-    id: 'sc-1',
-    email: 'arab-30@hotmail.com',
-    full_name: 'Abdulrahman Arab',
-    phone: '+966 5xxxxxxxx',
-    role: 'fitness_coach',
-    is_active: true,
-    last_login: '2025-01-21T06:00:00Z',
-    created_at: '2024-01-10T00:00:00Z',
-    updated_at: '2025-01-21T06:00:00Z',
-    assigned_sports: ['football'],
-    assigned_squads: ['first_team'],
-  },
-  {
-    id: 'sc-2',
-    email: 'the_loard@hotmail.com',
-    full_name: 'Faisal Alsharief',
-    phone: '+966 5xxxxxxxx',
-    role: 'fitness_coach',
-    is_active: true,
-    last_login: '2025-01-21T06:30:00Z',
-    created_at: '2024-01-10T00:00:00Z',
-    updated_at: '2025-01-21T06:30:00Z',
-    assigned_sports: ['football'],
-    assigned_squads: ['first_team', 'u21'],
-  },
-  {
-    id: 'sc-3',
-    email: 'rlanca@ittihadclub.sa',
-    full_name: 'Rui Lanca',
-    phone: '+966 5xxxxxxxx',
-    role: 'fitness_coach',
-    is_active: true,
-    last_login: '2025-01-21T07:00:00Z',
-    created_at: '2024-02-01T00:00:00Z',
-    updated_at: '2025-01-21T07:00:00Z',
-    assigned_sports: ['football'],
-    assigned_squads: ['first_team'],
-  },
-]
+import { useUser, mockUsers, addCustomUser, getAllUsers, updateUser, updateUserPassword, deleteUser, getDefaultPassword } from '@/context/UserContext'
 
 export default function SettingsPage() {
   // Get current user from context
@@ -303,23 +83,17 @@ export default function SettingsPage() {
   const [newSport, setNewSport] = useState({ name: '', nameAr: '' })
   const [newSquad, setNewSquad] = useState({ name: '', nameAr: '', sportId: 'all' })
 
-  // Users state - combines hardcoded users with custom users from localStorage
-  const [usersData, setUsersData] = useState<User[]>(allUsers)
+  // Users state - loaded from getAllUsers() which combines mockUsers with custom users from localStorage
+  const [usersData, setUsersData] = useState<User[]>([])
 
-  // Load sports, squads, and merge users on mount
+  // Load sports, squads, and users on mount
   useEffect(() => {
     setSportsData(getSports())
     setSquadsData(getSquads())
 
-    // Merge allUsers with custom users from localStorage
-    const customUsers = getAllUsers()
-    const mergedUsers = [...allUsers]
-    customUsers.forEach(cu => {
-      if (!mergedUsers.find(u => u.email.toLowerCase() === cu.email.toLowerCase())) {
-        mergedUsers.push(cu)
-      }
-    })
-    setUsersData(mergedUsers)
+    // Load all users (mockUsers + custom users from localStorage)
+    const allUsers = getAllUsers()
+    setUsersData(allUsers)
   }, [])
 
   // Save sports
@@ -1628,13 +1402,14 @@ export default function SettingsPage() {
           squadsData={squadsData}
           onClose={() => setShowAddUserModal(false)}
           onSave={(userData) => {
-            // Create new user object
+            // Create new user object with default password
             const newUser: User = {
               id: `user-${Date.now()}`,
               email: userData.email || '',
               full_name: userData.full_name || '',
               phone: userData.phone || '',
-              role: (userData.role || 'viewer') as UserRole,
+              password: getDefaultPassword(), // Set default password for new users
+              role: (userData.role || 'sport_coach') as UserRole,
               is_active: true,
               created_at: new Date().toISOString(),
               updated_at: new Date().toISOString(),
@@ -1645,7 +1420,7 @@ export default function SettingsPage() {
             addCustomUser(newUser)
             // Update local state to reflect changes immediately
             setUsersData(prev => [...prev, newUser])
-            console.log('User added and can now login:', newUser.email)
+            console.log('User added and can now login:', newUser.email, 'with password:', getDefaultPassword())
             setShowAddUserModal(false)
           }}
         />
@@ -1663,7 +1438,17 @@ export default function SettingsPage() {
             setSelectedUser(null)
           }}
           onSave={(userData) => {
-            console.log('Update user:', userData)
+            // Update user with new data (preserve password)
+            const updatedUser: User = {
+              ...selectedUser,
+              ...userData,
+              updated_at: new Date().toISOString(),
+            } as User
+            // Save to localStorage
+            updateUser(updatedUser)
+            // Update local state to reflect changes immediately
+            setUsersData(prev => prev.map(u => u.id === selectedUser.id ? updatedUser : u))
+            console.log('User updated:', updatedUser.email)
             setShowEditUserModal(false)
             setSelectedUser(null)
           }}
@@ -1678,8 +1463,17 @@ export default function SettingsPage() {
             setShowResetPasswordModal(false)
             setSelectedUser(null)
           }}
-          onReset={(newPassword) => {
-            console.log('Reset password for user:', selectedUser.id, 'New password:', newPassword)
+          onReset={() => {
+            // Reset password to default Welcome@123
+            const defaultPwd = getDefaultPassword()
+            const success = updateUserPassword(selectedUser.id, defaultPwd)
+            if (success) {
+              console.log('Password reset to default for user:', selectedUser.email)
+              // Update local state to reflect changes
+              setUsersData(prev => prev.map(u =>
+                u.id === selectedUser.id ? { ...u, password: defaultPwd, updated_at: new Date().toISOString() } : u
+              ))
+            }
             setShowResetPasswordModal(false)
             setSelectedUser(null)
           }}
@@ -2145,48 +1939,15 @@ function UserFormModal({ user, currentUserRole, sportsData, squadsData, onClose,
 interface ResetPasswordModalProps {
   user: User
   onClose: () => void
-  onReset: (newPassword: string) => void
+  onReset: () => void
 }
 
 function ResetPasswordModal({ user, onClose, onReset }: ResetPasswordModalProps) {
-  const [newPassword, setNewPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [error, setError] = useState('')
-  const [generateRandom, setGenerateRandom] = useState(false)
-
-  const generateRandomPassword = () => {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%'
-    let password = ''
-    for (let i = 0; i < 12; i++) {
-      password += chars.charAt(Math.floor(Math.random() * chars.length))
-    }
-    setNewPassword(password)
-    setConfirmPassword(password)
-    setGenerateRandom(true)
-    setError('')
-  }
+  const defaultPassword = getDefaultPassword()
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    setError('')
-
-    if (newPassword.length < 8) {
-      setError('Password must be at least 8 characters long')
-      return
-    }
-
-    if (newPassword !== confirmPassword) {
-      setError('Passwords do not match')
-      return
-    }
-
-    onReset(newPassword)
-  }
-
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(newPassword)
-    alert('Password copied to clipboard!')
+    onReset()
   }
 
   return (
@@ -2209,96 +1970,28 @@ function ResetPasswordModal({ user, onClose, onReset }: ResetPasswordModalProps)
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="p-3 rounded-lg bg-yellow-500/10" style={{ border: '1px solid var(--border)' }}>
             <p className="text-sm text-yellow-600 dark:text-yellow-400">
-              This will reset the password for {user.email}. The user will need to use the new password to log in.
+              This will reset the password for <strong>{user.email}</strong> to the default password.
             </p>
           </div>
 
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="block text-sm font-medium" style={{ color: 'var(--foreground)' }}>
-                New Password
-              </label>
-              <button
-                type="button"
-                onClick={generateRandomPassword}
-                className="text-xs text-[#FFD700] hover:underline"
-              >
-                Generate Random
-              </button>
-            </div>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--muted-foreground)' }} size={20} />
-              <input
-                type={showPassword ? 'text' : 'password'}
-                required
-                value={newPassword}
-                onChange={(e) => {
-                  setNewPassword(e.target.value)
-                  setGenerateRandom(false)
-                  setError('')
-                }}
-                className="w-full pl-10 pr-20 py-3 border rounded-lg bg-transparent text-base focus:outline-none focus:border-[#FFD700]"
-                style={{ borderColor: 'var(--border)', color: 'var(--foreground)' }}
-                placeholder="Enter new password"
-              />
-              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                {generateRandom && (
-                  <button
-                    type="button"
-                    onClick={copyToClipboard}
-                    className="p-1 text-[#FFD700] hover:bg-[#FFD700]/10 rounded"
-                    title="Copy password"
-                  >
-                    <Mail size={18} />
-                  </button>
-                )}
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="p-1"
-                  style={{ color: 'var(--muted-foreground)' }}
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2" style={{ color: 'var(--foreground)' }}>
-              Confirm Password
+          <div className="p-4 rounded-lg" style={{ backgroundColor: 'var(--muted)', border: '1px solid var(--border)' }}>
+            <label className="block text-sm font-medium mb-2" style={{ color: 'var(--muted-foreground)' }}>
+              New Password will be:
             </label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--muted-foreground)' }} size={20} />
-              <input
-                type={showPassword ? 'text' : 'password'}
-                required
-                value={confirmPassword}
-                onChange={(e) => {
-                  setConfirmPassword(e.target.value)
-                  setError('')
-                }}
-                className="w-full pl-10 pr-4 py-3 border rounded-lg bg-transparent text-base focus:outline-none focus:border-[#FFD700]"
-                style={{ borderColor: 'var(--border)', color: 'var(--foreground)' }}
-                placeholder="Confirm new password"
-              />
+            <div className="flex items-center gap-3">
+              <Lock className="text-[#FFD700]" size={20} />
+              <code className="text-lg font-mono font-bold" style={{ color: 'var(--foreground)' }}>
+                {defaultPassword}
+              </code>
             </div>
           </div>
 
-          {error && (
-            <div className="p-3 rounded-lg bg-red-500/10" style={{ border: '1px solid var(--border)' }}>
-              <p className="text-sm text-red-500">{error}</p>
-            </div>
-          )}
-
-          {newPassword && newPassword.length >= 8 && newPassword === confirmPassword && (
-            <div className="p-3 rounded-lg bg-green-500/10" style={{ border: '1px solid var(--border)' }}>
-              <p className="text-sm text-green-500 flex items-center gap-2">
-                <CheckCircle size={16} />
-                Password is valid and matches
-              </p>
-            </div>
-          )}
+          <div className="p-3 rounded-lg bg-blue-500/10" style={{ border: '1px solid var(--border)' }}>
+            <p className="text-sm text-blue-500 flex items-center gap-2">
+              <Shield size={16} />
+              The user should change this password after logging in.
+            </p>
+          </div>
 
           <div className="flex items-center gap-4 pt-4">
             <Button type="submit" variant="primary" leftIcon={<KeyRound size={18} />}>

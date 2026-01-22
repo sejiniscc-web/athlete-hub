@@ -111,6 +111,7 @@ export interface User {
   email: string
   full_name: string
   phone?: string
+  password?: string  // Hashed password for authentication
   role: UserRole
   picture?: string
   is_active: boolean
