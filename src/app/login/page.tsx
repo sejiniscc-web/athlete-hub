@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -15,6 +15,27 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [focusedField, setFocusedField] = useState<string | null>(null)
+  const [checkingAuth, setCheckingAuth] = useState(true)
+
+  // Check if user is already logged in
+  useEffect(() => {
+    const currentUserId = localStorage.getItem('athlete_hub_current_user')
+    if (currentUserId) {
+      // User is already logged in, redirect to dashboard
+      router.replace('/dashboard')
+    } else {
+      setCheckingAuth(false)
+    }
+  }, [router])
+
+  // Show loading while checking auth
+  if (checkingAuth) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="animate-spin w-8 h-8 border-4 border-[#FFD700] border-t-transparent rounded-full" />
+      </div>
+    )
+  }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
