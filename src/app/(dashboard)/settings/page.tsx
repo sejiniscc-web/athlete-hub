@@ -1111,15 +1111,6 @@ export default function SettingsPage() {
               </div>
             </div>
 
-            <div className="p-4 rounded-lg" style={{ backgroundColor: 'var(--muted)', border: '1px solid var(--border)' }}>
-              <h4 className="text-lg font-medium mb-4" style={{ color: 'var(--foreground)' }}>
-                Two-Factor Authentication
-              </h4>
-              <p className="text-base mb-4" style={{ color: 'var(--muted-foreground)' }}>
-                Add an extra layer of security to your account.
-              </p>
-              <Button variant="outline">Enable 2FA</Button>
-            </div>
 
             <div className="p-4 rounded-lg" style={{ backgroundColor: 'var(--muted)', border: '1px solid var(--border)' }}>
               <h4 className="text-lg font-medium mb-4" style={{ color: 'var(--foreground)' }}>
