@@ -51,14 +51,14 @@ import { useUser, mockUsers } from '@/context/UserContext'
 const allUsers: User[] = [
   {
     id: 'sys-admin-1',
-    email: 'sysadmin@ittihadclub.sa',
-    full_name: 'System Administrator',
+    email: 'abdul.sejini@gmail.com',
+    full_name: 'Abdulelah Sejini',
     role: 'system_admin',
     is_active: true,
-    last_login: '2025-01-21T10:00:00Z',
+    last_login: '2025-01-22T10:00:00Z',
     created_at: '2024-01-01T00:00:00Z',
-    updated_at: '2025-01-21T10:00:00Z',
-    assigned_sports: [], // Full access
+    updated_at: '2025-01-22T10:00:00Z',
+    assigned_sports: [], // Full access - system_admin has ALL permissions
     assigned_squads: [],
   },
   {

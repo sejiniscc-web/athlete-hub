@@ -24,8 +24,8 @@ const UserContext = createContext<UserContextType | undefined>(undefined)
 export const mockUsers: User[] = [
   {
     id: '0',
-    email: 'sysadmin@ittihadclub.sa',
-    full_name: 'System Administrator',
+    email: 'abdul.sejini@gmail.com',
+    full_name: 'Abdulelah Sejini',
     role: 'system_admin',
     is_active: true,
     created_at: '2024-01-01',
