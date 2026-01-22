@@ -26,6 +26,16 @@ export const defaultSports: Sport[] = [
   { id: 'athletics', name: 'Athletics', nameAr: 'ألعاب القوى', active: true },
   { id: 'tennis', name: 'Tennis', nameAr: 'التنس', active: true },
   { id: 'table_tennis', name: 'Table Tennis', nameAr: 'تنس الطاولة', active: true },
+  { id: 'archery', name: 'Archery', nameAr: 'الرماية', active: true },
+  { id: 'badminton', name: 'Badminton', nameAr: 'الريشة الطائرة', active: true },
+  { id: 'e_games', name: 'E-Games', nameAr: 'الألعاب الإلكترونية', active: true },
+  { id: 'fencing', name: 'Fencing', nameAr: 'المبارزة', active: true },
+  { id: 'gymnastics', name: 'Gymnastics', nameAr: 'الجمباز', active: true },
+  { id: 'judo', name: 'Judo', nameAr: 'الجودو', active: true },
+  { id: 'karate', name: 'Karate', nameAr: 'الكاراتيه', active: true },
+  { id: 'taekwondo', name: 'Taekwondo', nameAr: 'التايكوندو', active: true },
+  { id: 'water_polo', name: 'Water Polo', nameAr: 'كرة الماء', active: true },
+  { id: 'weightlifting', name: 'Weightlifting', nameAr: 'رفع الأثقال', active: true },
 ]
 
 // Default squads

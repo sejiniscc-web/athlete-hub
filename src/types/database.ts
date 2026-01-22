@@ -1,12 +1,14 @@
 // Database Types for Athlete Profile Performance System
 
 // Role hierarchy: system_admin > super_admin > admin > other roles
-// system_admin is hidden from all users below
+// system_admin is completely hidden from all users below - they cannot see, manage, or know about system_admin
+// ONLY system_admin has Switch User capability
 export type UserRole =
-  | 'system_admin'    // Highest level - hidden from everyone else
-  | 'super_admin'     // Can manage all users except system_admin
+  | 'system_admin'    // Highest level - hidden from everyone, has ALL permissions including Switch User
+  | 'super_admin'     // Can manage all users except system_admin (cannot see system_admin)
   | 'admin'
   | 'doctor'
+  | 'physiotherapist' // Physical therapist / معالج طبيعي
   | 'fitness_coach'
   | 'sport_coach'
   | 'nutritionist'
@@ -19,11 +21,22 @@ export const ROLE_HIERARCHY: Record<UserRole, number> = {
   super_admin: 90,
   admin: 80,
   doctor: 60,
+  physiotherapist: 55,
   fitness_coach: 50,
   sport_coach: 50,
   nutritionist: 50,
   psychologist: 50,
   athlete: 10,
+}
+
+// Check if user is System Admin (has ALL permissions)
+export function isSystemAdmin(role: UserRole): boolean {
+  return role === 'system_admin'
+}
+
+// Check if user can use Switch User feature (ONLY system_admin)
+export function canSwitchUser(role: UserRole): boolean {
+  return role === 'system_admin'
 }
 
 // Role display names
@@ -32,6 +45,7 @@ export const ROLE_DISPLAY_NAMES: Record<UserRole, string> = {
   super_admin: 'Super Admin',
   admin: 'Admin',
   doctor: 'Doctor',
+  physiotherapist: 'Physiotherapist',
   fitness_coach: 'Fitness Coach',
   sport_coach: 'Sport Coach',
   nutritionist: 'Nutritionist',
@@ -40,17 +54,19 @@ export const ROLE_DISPLAY_NAMES: Record<UserRole, string> = {
 }
 
 // Get roles that a user can see based on their role
+// IMPORTANT: system_admin is COMPLETELY hidden from everyone except system_admin
 export function getVisibleRoles(currentUserRole: UserRole): UserRole[] {
   const allRoles: UserRole[] = [
-    'system_admin', 'super_admin', 'admin', 'doctor',
+    'system_admin', 'super_admin', 'admin', 'doctor', 'physiotherapist',
     'fitness_coach', 'sport_coach', 'nutritionist', 'psychologist', 'athlete'
   ]
 
   if (currentUserRole === 'system_admin') {
-    return allRoles // System admin sees everyone
+    return allRoles // System admin sees everyone including themselves
   }
 
-  // All other roles cannot see system_admin
+  // All other roles (including super_admin) CANNOT see system_admin
+  // system_admin is completely invisible to them
   return allRoles.filter(role => role !== 'system_admin')
 }
 
@@ -60,6 +76,7 @@ export function canManageUser(managerRole: UserRole, targetRole: UserRole): bool
   if (managerRole === 'system_admin') return true
 
   // No one can manage system_admin except system_admin
+  // system_admin is completely protected from all other users
   if (targetRole === 'system_admin') return false
 
   // Super admin can manage everyone except system_admin
@@ -67,6 +84,17 @@ export function canManageUser(managerRole: UserRole, targetRole: UserRole): bool
 
   // Others can only manage roles below them
   return ROLE_HIERARCHY[managerRole] > ROLE_HIERARCHY[targetRole]
+}
+
+// Get users that can be switched to (ONLY for system_admin)
+export function getSwitchableUsers(currentUserRole: UserRole, allUsers: User[]): User[] {
+  // Only system_admin can switch users
+  if (currentUserRole !== 'system_admin') {
+    return []
+  }
+
+  // System admin can switch to any user
+  return allUsers
 }
 
 export interface User {

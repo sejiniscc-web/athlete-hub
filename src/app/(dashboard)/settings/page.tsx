@@ -30,7 +30,9 @@ import {
   Dumbbell,
   Users,
   X,
-  KeyRound
+  KeyRound,
+  RefreshCw,
+  ArrowLeftRight
 } from 'lucide-react'
 import { Sport, Squad, getSports, setSports, getSquads, setSquads, defaultSports, defaultSquads } from '@/data/settings'
 import {
@@ -39,19 +41,11 @@ import {
   ROLE_DISPLAY_NAMES,
   getVisibleRoles,
   canManageUser,
-  hasFullAccess
+  hasFullAccess,
+  canSwitchUser,
+  isSystemAdmin
 } from '@/types/database'
-
-// Mock current user - In production, get from auth context
-const currentUser: User = {
-  id: 'current-user',
-  email: 'Hjambi@ittihadclub.sa',
-  full_name: 'Hala Jambi',
-  role: 'super_admin',
-  is_active: true,
-  created_at: new Date().toISOString(),
-  updated_at: new Date().toISOString(),
-}
+import { useUser, mockUsers } from '@/context/UserContext'
 
 // Mock users data with assigned sports and squads
 const allUsers: User[] = [
@@ -152,9 +146,142 @@ const allUsers: User[] = [
     assigned_sports: ['football'],
     assigned_squads: ['all'],
   },
+  // Physiotherapists
+  {
+    id: 'physio-1',
+    email: 'Abdulmoeen.kl@gmail.com',
+    full_name: 'Abdulmoien Kalantan',
+    phone: '+966 5xxxxxxxx',
+    role: 'physiotherapist',
+    is_active: true,
+    last_login: '2025-01-21T08:30:00Z',
+    created_at: '2024-01-15T00:00:00Z',
+    updated_at: '2025-01-21T08:30:00Z',
+    assigned_sports: ['football'],
+    assigned_squads: ['first_team'],
+  },
+  {
+    id: 'physio-2',
+    email: 'mohamedberriri.kine@gmail.com',
+    full_name: 'Mohammed Berrery',
+    phone: '+966 5xxxxxxxx',
+    role: 'physiotherapist',
+    is_active: true,
+    last_login: '2025-01-21T09:00:00Z',
+    created_at: '2024-01-15T00:00:00Z',
+    updated_at: '2025-01-21T09:00:00Z',
+    assigned_sports: ['football'],
+    assigned_squads: ['first_team', 'u21'],
+  },
+  {
+    id: 'physio-3',
+    email: 'hmalshareef@ittihadclub.sa',
+    full_name: 'Hassan Alsharief',
+    phone: '+966 5xxxxxxxx',
+    role: 'physiotherapist',
+    is_active: true,
+    last_login: '2025-01-20T16:00:00Z',
+    created_at: '2024-02-01T00:00:00Z',
+    updated_at: '2025-01-20T16:00:00Z',
+    assigned_sports: ['football'],
+    assigned_squads: ['first_team'],
+  },
+  {
+    id: 'physio-4',
+    email: 'Saadyahya0505@gmail.com',
+    full_name: 'Saad Alqahtani',
+    phone: '+966 5xxxxxxxx',
+    role: 'physiotherapist',
+    is_active: true,
+    last_login: '2025-01-21T07:30:00Z',
+    created_at: '2024-02-15T00:00:00Z',
+    updated_at: '2025-01-21T07:30:00Z',
+    assigned_sports: ['football'],
+    assigned_squads: ['u21'],
+  },
+  {
+    id: 'physio-5',
+    email: 'lolo.oskaz@gmail.com',
+    full_name: 'Lara Kazim',
+    phone: '+966 5xxxxxxxx',
+    role: 'physiotherapist',
+    is_active: true,
+    last_login: '2025-01-21T10:00:00Z',
+    created_at: '2024-03-01T00:00:00Z',
+    updated_at: '2025-01-21T10:00:00Z',
+    assigned_sports: ['all'],
+    assigned_squads: ['first_team'],
+  },
+  {
+    id: 'physio-6',
+    email: 'Smalasmari@ittihadclub.sa',
+    full_name: 'Saed Alasmari',
+    phone: '+966 5xxxxxxxx',
+    role: 'physiotherapist',
+    is_active: true,
+    last_login: '2025-01-20T14:30:00Z',
+    created_at: '2024-03-15T00:00:00Z',
+    updated_at: '2025-01-20T14:30:00Z',
+    assigned_sports: ['football'],
+    assigned_squads: ['all'],
+  },
+  // Strength and Condition Coaches
+  {
+    id: 'sc-1',
+    email: 'arab-30@hotmail.com',
+    full_name: 'Abdulrahman Arab',
+    phone: '+966 5xxxxxxxx',
+    role: 'fitness_coach',
+    is_active: true,
+    last_login: '2025-01-21T06:00:00Z',
+    created_at: '2024-01-10T00:00:00Z',
+    updated_at: '2025-01-21T06:00:00Z',
+    assigned_sports: ['football'],
+    assigned_squads: ['first_team'],
+  },
+  {
+    id: 'sc-2',
+    email: 'the_loard@hotmail.com',
+    full_name: 'Faisal Alsharief',
+    phone: '+966 5xxxxxxxx',
+    role: 'fitness_coach',
+    is_active: true,
+    last_login: '2025-01-21T06:30:00Z',
+    created_at: '2024-01-10T00:00:00Z',
+    updated_at: '2025-01-21T06:30:00Z',
+    assigned_sports: ['football'],
+    assigned_squads: ['first_team', 'u21'],
+  },
+  {
+    id: 'sc-3',
+    email: 'rlanca@ittihadclub.sa',
+    full_name: 'Rui Lanca',
+    phone: '+966 5xxxxxxxx',
+    role: 'fitness_coach',
+    is_active: true,
+    last_login: '2025-01-21T07:00:00Z',
+    created_at: '2024-02-01T00:00:00Z',
+    updated_at: '2025-01-21T07:00:00Z',
+    assigned_sports: ['football'],
+    assigned_squads: ['first_team'],
+  },
 ]
 
 export default function SettingsPage() {
+  // Get current user from context
+  const { currentUser: contextUser, originalUser, isSwitchedUser, switchToUser, switchBack, canSwitchUser: userCanSwitch } = useUser()
+
+  // Fallback for when context is loading
+  const currentUser: User = contextUser || {
+    id: 'default',
+    email: 'admin@ittihadclub.sa',
+    full_name: 'Admin',
+    role: 'super_admin',
+    is_active: true,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  }
+
   const [activeTab, setActiveTab] = useState('profile')
   const [showPassword, setShowPassword] = useState(false)
   const [showAddUserModal, setShowAddUserModal] = useState(false)
@@ -286,15 +413,29 @@ export default function SettingsPage() {
     timezone: 'Asia/Riyadh',
   })
 
-  const tabs = [
-    { id: 'profile', label: 'Profile', icon: UserIcon },
-    { id: 'users', label: 'User Management', icon: UserCog },
-    { id: 'sports', label: 'Sports & Squads', icon: Dumbbell },
-    { id: 'notifications', label: 'Notifications', icon: Bell },
-    { id: 'security', label: 'Security', icon: Shield },
-    { id: 'appearance', label: 'Appearance', icon: Palette },
-    { id: 'system', label: 'System', icon: Database },
+  const allTabs = [
+    { id: 'profile', label: 'Profile', icon: UserIcon, adminOnly: false, systemAdminOnly: false },
+    { id: 'users', label: 'User Management', icon: UserCog, adminOnly: false, systemAdminOnly: false },
+    { id: 'sports', label: 'Sports & Squads', icon: Dumbbell, adminOnly: false, systemAdminOnly: false },
+    { id: 'notifications', label: 'Notifications', icon: Bell, adminOnly: false, systemAdminOnly: false },
+    { id: 'security', label: 'Security', icon: Shield, adminOnly: false, systemAdminOnly: false },
+    { id: 'appearance', label: 'Appearance', icon: Palette, adminOnly: false, systemAdminOnly: false },
+    { id: 'system', label: 'System', icon: Database, adminOnly: true, systemAdminOnly: false },
+    { id: 'switch_user', label: 'Switch User', icon: ArrowLeftRight, adminOnly: false, systemAdminOnly: true },
   ]
+
+  // Filter tabs based on user role
+  // - System tab: only for super_admin and system_admin
+  // - Switch User tab: ONLY for system_admin
+  const tabs = allTabs.filter(tab => {
+    if (tab.systemAdminOnly) {
+      return currentUser.role === 'system_admin'
+    }
+    if (tab.adminOnly) {
+      return currentUser.role === 'super_admin' || currentUser.role === 'system_admin'
+    }
+    return true
+  })
 
   // User Management helpers
   const visibleRoles = getVisibleRoles(currentUser.role)
@@ -1282,6 +1423,127 @@ export default function SettingsPage() {
           </div>
         )
 
+      case 'switch_user':
+        return (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-xl font-semibold" style={{ color: 'var(--foreground)' }}>
+                  Switch User
+                </h3>
+                <p className="text-base" style={{ color: 'var(--muted-foreground)' }}>
+                  View the system as another user (System Admin only)
+                </p>
+              </div>
+              {isSwitchedUser && (
+                <Button
+                  variant="primary"
+                  leftIcon={<RefreshCw size={18} />}
+                  onClick={switchBack}
+                >
+                  Switch Back to {originalUser?.full_name}
+                </Button>
+              )}
+            </div>
+
+            {/* Current Status */}
+            {isSwitchedUser && (
+              <div className="p-4 rounded-lg bg-[#FFD700]/20" style={{ border: '2px solid #FFD700' }}>
+                <div className="flex items-center gap-3">
+                  <ArrowLeftRight className="text-[#FFD700]" size={24} />
+                  <div>
+                    <p className="font-semibold" style={{ color: 'var(--foreground)' }}>
+                      Currently viewing as: {currentUser.full_name}
+                    </p>
+                    <p className="text-sm" style={{ color: 'var(--muted-foreground)' }}>
+                      Role: {ROLE_DISPLAY_NAMES[currentUser.role]} • Original: {originalUser?.full_name} ({originalUser ? ROLE_DISPLAY_NAMES[originalUser.role] : ''})
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Warning */}
+            <div className="p-4 rounded-lg bg-yellow-500/10" style={{ border: '1px solid var(--border)' }}>
+              <p className="text-sm text-yellow-600 dark:text-yellow-400 flex items-center gap-2">
+                <ShieldAlert size={18} />
+                Switch User allows you to view the system from another user&apos;s perspective. All actions will be performed as that user.
+              </p>
+            </div>
+
+            {/* Users List */}
+            <div className="p-4 rounded-lg" style={{ backgroundColor: 'var(--muted)', border: '1px solid var(--border)' }}>
+              <h4 className="text-lg font-medium mb-4" style={{ color: 'var(--foreground)' }}>
+                Select User to Switch To
+              </h4>
+              <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                {mockUsers.map((user) => {
+                  const isCurrentSwitch = currentUser.id === user.id
+                  const isOriginal = originalUser?.id === user.id
+
+                  return (
+                    <div
+                      key={user.id}
+                      className={`flex items-center justify-between p-4 rounded-lg transition-all ${
+                        isCurrentSwitch
+                          ? 'bg-[#FFD700]/20 border-2 border-[#FFD700]'
+                          : 'hover:bg-[#FFD700]/10'
+                      }`}
+                      style={!isCurrentSwitch ? { backgroundColor: 'var(--card)', border: '1px solid var(--border)' } : undefined}
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-[#FFD700]/20 rounded-full flex items-center justify-center">
+                          {user.role === 'system_admin' ? (
+                            <ShieldAlert className="text-red-500" size={24} />
+                          ) : user.role === 'super_admin' ? (
+                            <ShieldCheck className="text-[#FFD700]" size={24} />
+                          ) : (
+                            <UserIcon className="text-gray-500" size={24} />
+                          )}
+                        </div>
+                        <div>
+                          <p className="font-semibold" style={{ color: 'var(--foreground)' }}>
+                            {user.full_name}
+                            {isOriginal && (
+                              <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-500">
+                                Original
+                              </span>
+                            )}
+                            {isCurrentSwitch && !isOriginal && (
+                              <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-[#FFD700]/20 text-[#FFD700]">
+                                Current
+                              </span>
+                            )}
+                          </p>
+                          <p className="text-sm" style={{ color: 'var(--muted-foreground)' }}>
+                            {user.email}
+                          </p>
+                          <span className={`text-xs px-2 py-0.5 rounded-full ${getRoleBadgeColor(user.role)}`}>
+                            {ROLE_DISPLAY_NAMES[user.role]}
+                          </span>
+                        </div>
+                      </div>
+                      <div>
+                        {!isCurrentSwitch && (
+                          <Button
+                            variant="outline"
+                            onClick={() => switchToUser(user)}
+                          >
+                            Switch to User
+                          </Button>
+                        )}
+                        {isCurrentSwitch && !isOriginal && (
+                          <span className="text-sm text-[#FFD700] font-medium">Viewing as this user</span>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          </div>
+        )
+
       default:
         return null
     }
@@ -1289,7 +1551,7 @@ export default function SettingsPage() {
 
   return (
     <div>
-      <Header title="Settings" userName="Hala Jambi" userRole="Super Admin" />
+      <Header title="Settings" userName={currentUser.full_name} userRole={ROLE_DISPLAY_NAMES[currentUser.role]} />
 
       <div className="p-6">
         <div className="flex gap-6">
@@ -1386,16 +1648,27 @@ interface UserFormModalProps {
   onSave: (userData: Partial<User>) => void
 }
 
+interface CreatedUserCredentials {
+  email: string
+  password: string
+  full_name: string
+}
+
 function UserFormModal({ user, currentUserRole, sportsData, squadsData, onClose, onSave }: UserFormModalProps) {
   const [formData, setFormData] = useState({
     full_name: user?.full_name || '',
     email: user?.email || '',
     phone: user?.phone || '',
-    role: user?.role || 'athlete' as UserRole,
+    role: user?.role || 'sport_coach' as UserRole,
     is_active: user?.is_active ?? true,
     assigned_sports: user?.assigned_sports || [] as string[],
     assigned_squads: user?.assigned_squads || [] as string[],
   })
+
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState('')
+  const [createdCredentials, setCreatedCredentials] = useState<CreatedUserCredentials | null>(null)
+  const [copiedField, setCopiedField] = useState<string | null>(null)
 
   const isEditing = !!user
   const visibleRoles = getVisibleRoles(currentUserRole)
@@ -1408,9 +1681,56 @@ function UserFormModal({ user, currentUserRole, sportsData, squadsData, onClose,
   // Check if selected role has full access (admin roles don't need sport/squad assignments)
   const roleHasFullAccess = hasFullAccess(formData.role)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const copyToClipboard = async (text: string, field: string) => {
+    await navigator.clipboard.writeText(text)
+    setCopiedField(field)
+    setTimeout(() => setCopiedField(null), 2000)
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    onSave(formData)
+    setError('')
+    setIsSubmitting(true)
+
+    if (isEditing) {
+      // For editing, just call onSave directly
+      onSave(formData)
+      return
+    }
+
+    // For new user, call the API
+    try {
+      const response = await fetch('/api/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          full_name: formData.full_name,
+          role: formData.role,
+          assigned_sports: formData.assigned_sports,
+          assigned_squads: formData.assigned_squads,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create user')
+      }
+
+      // Show credentials to admin
+      setCreatedCredentials({
+        email: data.credentials.email,
+        password: data.credentials.password,
+        full_name: data.user.full_name,
+      })
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to create user')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   // Toggle sport selection
@@ -1449,6 +1769,105 @@ function UserFormModal({ user, currentUserRole, sportsData, squadsData, onClose,
         setFormData({ ...formData, assigned_squads: [...newSquads, squadId] })
       }
     }
+  }
+
+  // If credentials were created, show success screen
+  if (createdCredentials) {
+    return (
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div className="rounded-xl p-6 w-full max-w-md" style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)' }}>
+          <div className="text-center mb-6">
+            <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CheckCircle className="text-green-500" size={32} />
+            </div>
+            <h2 className="text-xl font-bold" style={{ color: 'var(--foreground)' }}>
+              User Created Successfully!
+            </h2>
+            <p className="text-sm mt-2" style={{ color: 'var(--muted-foreground)' }}>
+              Share these credentials with {createdCredentials.full_name}
+            </p>
+          </div>
+
+          <div className="space-y-4 p-4 rounded-lg" style={{ backgroundColor: 'var(--muted)', border: '1px solid var(--border)' }}>
+            <div>
+              <label className="block text-xs font-medium mb-1 text-[#FFD700]">Email</label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  readOnly
+                  value={createdCredentials.email}
+                  className="flex-1 px-3 py-2 rounded-lg bg-transparent text-base"
+                  style={{ border: '1px solid var(--border)', color: 'var(--foreground)' }}
+                />
+                <button
+                  type="button"
+                  onClick={() => copyToClipboard(createdCredentials.email, 'email')}
+                  className={`p-2 rounded-lg transition-colors ${
+                    copiedField === 'email' ? 'bg-green-500 text-white' : 'bg-[#FFD700]/20 text-[#FFD700] hover:bg-[#FFD700]/30'
+                  }`}
+                >
+                  {copiedField === 'email' ? <CheckCircle size={18} /> : <Mail size={18} />}
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium mb-1 text-[#FFD700]">Password</label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  readOnly
+                  value={createdCredentials.password}
+                  className="flex-1 px-3 py-2 rounded-lg bg-transparent text-base font-mono"
+                  style={{ border: '1px solid var(--border)', color: 'var(--foreground)' }}
+                />
+                <button
+                  type="button"
+                  onClick={() => copyToClipboard(createdCredentials.password, 'password')}
+                  className={`p-2 rounded-lg transition-colors ${
+                    copiedField === 'password' ? 'bg-green-500 text-white' : 'bg-[#FFD700]/20 text-[#FFD700] hover:bg-[#FFD700]/30'
+                  }`}
+                >
+                  {copiedField === 'password' ? <CheckCircle size={18} /> : <KeyRound size={18} />}
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                const text = `Login Credentials for ${createdCredentials.full_name}:\n\nEmail: ${createdCredentials.email}\nPassword: ${createdCredentials.password}\n\nPlease change your password after first login.`
+                copyToClipboard(text, 'all')
+              }}
+              className={`w-full py-2 rounded-lg transition-colors text-sm font-medium ${
+                copiedField === 'all' ? 'bg-green-500 text-white' : 'bg-[#FFD700] text-black hover:bg-[#D4AF00]'
+              }`}
+            >
+              {copiedField === 'all' ? 'Copied!' : 'Copy All Credentials'}
+            </button>
+          </div>
+
+          <div className="p-3 rounded-lg bg-yellow-500/10 mt-4" style={{ border: '1px solid var(--border)' }}>
+            <p className="text-xs text-yellow-600 dark:text-yellow-400">
+              Make sure to save these credentials securely. The password will not be shown again.
+            </p>
+          </div>
+
+          <div className="mt-6">
+            <Button
+              variant="primary"
+              className="w-full"
+              onClick={() => {
+                onSave(formData)
+                onClose()
+              }}
+            >
+              Done
+            </Button>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -1642,11 +2061,26 @@ function UserFormModal({ user, currentUserRole, sportsData, squadsData, onClose,
             </label>
           </div>
 
+          {error && (
+            <div className="p-3 rounded-lg bg-red-500/10" style={{ border: '1px solid var(--border)' }}>
+              <p className="text-sm text-red-500">{error}</p>
+            </div>
+          )}
+
+          {!isEditing && (
+            <div className="p-3 rounded-lg bg-blue-500/10" style={{ border: '1px solid var(--border)' }}>
+              <p className="text-sm text-blue-600 dark:text-blue-400 flex items-center gap-2">
+                <KeyRound size={16} />
+                A random password will be generated automatically. You can share it with the user after creation.
+              </p>
+            </div>
+          )}
+
           <div className="flex items-center gap-4 pt-4">
-            <Button type="submit" variant="primary">
-              {isEditing ? 'Update User' : 'Create User'}
+            <Button type="submit" variant="primary" disabled={isSubmitting}>
+              {isSubmitting ? 'Creating...' : isEditing ? 'Update User' : 'Create User'}
             </Button>
-            <Button type="button" variant="outline" onClick={onClose}>
+            <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>
               Cancel
             </Button>
           </div>

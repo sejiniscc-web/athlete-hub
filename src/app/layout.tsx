@@ -16,6 +16,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Al-Ittihad FC | Athlete Performance Management",
   description: "Athlete Performance Management System for Al-Ittihad FC",
+  icons: {
+    icon: "/ittihad-logo.png",
+    shortcut: "/ittihad-logo.png",
+    apple: "/ittihad-logo.png",
+  },
 };
 
 export default function RootLayout({
