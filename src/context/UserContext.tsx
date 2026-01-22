@@ -343,12 +343,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  // Switch to another user (ONLY for system_admin)
+  // Switch to another user (ONLY for the hidden system admin)
   const switchToUser = (user: User) => {
-    // Only system_admin can switch users
+    // Only the hidden system admin can switch users
     const actualUser = originalUser || currentUser
-    if (!actualUser || !canSwitchUser(actualUser.role)) {
-      console.error('Only system_admin can switch users')
+    if (!actualUser || !canSwitchUser(actualUser.role, actualUser.email)) {
+      console.error('Only the hidden system admin can switch users')
       return
     }
 
@@ -383,7 +383,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     isLoading,
     hasFullAccess: currentUser ? hasFullAccess(currentUser.role) : false,
     isSystemAdmin: currentUser ? isSystemAdmin(currentUser.role) : false,
-    canSwitchUser: (originalUser || currentUser) ? canSwitchUser((originalUser || currentUser)!.role) : false,
+    canSwitchUser: (originalUser || currentUser) ? canSwitchUser((originalUser || currentUser)!.role, (originalUser || currentUser)!.email) : false,
     isSwitchedUser,
     filterAthletes: <T extends { sport: string; squad?: string }>(athletes: T[]) => {
       if (!currentUser) return []
