@@ -45,7 +45,7 @@ import {
   canSwitchUser,
   isSystemAdmin
 } from '@/types/database'
-import { useUser, mockUsers, addCustomUser } from '@/context/UserContext'
+import { useUser, mockUsers, addCustomUser, getAllUsers } from '@/context/UserContext'
 
 // Mock users data with assigned sports and squads
 const allUsers: User[] = [
@@ -301,10 +301,23 @@ export default function SettingsPage() {
   const [newSport, setNewSport] = useState({ name: '', nameAr: '' })
   const [newSquad, setNewSquad] = useState({ name: '', nameAr: '', sportId: 'all' })
 
-  // Load sports and squads on mount
+  // Users state - combines hardcoded users with custom users from localStorage
+  const [usersData, setUsersData] = useState<User[]>(allUsers)
+
+  // Load sports, squads, and merge users on mount
   useEffect(() => {
     setSportsData(getSports())
     setSquadsData(getSquads())
+
+    // Merge allUsers with custom users from localStorage
+    const customUsers = getAllUsers()
+    const mergedUsers = [...allUsers]
+    customUsers.forEach(cu => {
+      if (!mergedUsers.find(u => u.email.toLowerCase() === cu.email.toLowerCase())) {
+        mergedUsers.push(cu)
+      }
+    })
+    setUsersData(mergedUsers)
   }, [])
 
   // Save sports
@@ -443,8 +456,8 @@ export default function SettingsPage() {
   // User Management helpers
   const visibleRoles = getVisibleRoles(currentUser.role)
   const visibleUsers = useMemo(() => {
-    return allUsers.filter(user => visibleRoles.includes(user.role))
-  }, [visibleRoles])
+    return usersData.filter(user => visibleRoles.includes(user.role))
+  }, [usersData, visibleRoles])
 
   const filteredUsers = useMemo(() => {
     return visibleUsers.filter(user => {
@@ -1622,6 +1635,8 @@ export default function SettingsPage() {
             }
             // Save to localStorage so they can login
             addCustomUser(newUser)
+            // Update local state to reflect changes immediately
+            setUsersData(prev => [...prev, newUser])
             console.log('User added and can now login:', newUser.email)
             setShowAddUserModal(false)
           }}
