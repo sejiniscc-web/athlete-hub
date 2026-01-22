@@ -16,12 +16,13 @@ import {
   LogOut,
   Menu,
   X,
-  BarChart3
+  BarChart3,
+  FileSearch
 } from 'lucide-react'
 import { useState } from 'react'
 import UserSwitcher from './UserSwitcher'
 import { useUser } from '@/context/UserContext'
-import { hasFullAccess } from '@/types/database'
+import { hasFullAccess, HIDDEN_SYSTEM_ADMIN_EMAIL } from '@/types/database'
 
 const menuItems = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -40,6 +41,11 @@ const adminMenuItems = [
   { name: 'User Analytics', href: '/user-analytics', icon: BarChart3 },
 ]
 
+// System Admin only menu items (only for abdul.sejini@gmail.com)
+const systemAdminMenuItems = [
+  { name: 'Audit Trail', href: '/audit-trail', icon: FileSearch },
+]
+
 const bottomMenuItems = [
   { name: 'Settings', href: '/settings', icon: Settings },
   { name: 'Logout', href: '/logout', icon: LogOut },
@@ -52,6 +58,9 @@ export default function Sidebar() {
 
   // Check if user is admin
   const isAdmin = currentUser && hasFullAccess(currentUser.role)
+
+  // Check if user is the hidden system admin (abdul.sejini@gmail.com)
+  const isSystemAdmin = currentUser?.email?.toLowerCase() === HIDDEN_SYSTEM_ADMIN_EMAIL.toLowerCase()
 
   return (
     <>
@@ -135,6 +144,42 @@ export default function Sidebar() {
 
             {/* Admin-only menu items */}
             {isAdmin && adminMenuItems.map((item) => {
+              const isActive = pathname === item.href
+              const Icon = item.icon
+              return (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className="flex items-center gap-3 px-4 py-3.5 rounded-lg transition-all duration-200"
+                    style={{
+                      backgroundColor: isActive ? '#FFD700' : 'transparent',
+                      color: isActive ? '#000000' : 'var(--sidebar-text)',
+                      fontWeight: isActive ? 600 : 400,
+                      fontSize: '1.1rem'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isActive) {
+                        e.currentTarget.style.backgroundColor = 'var(--sidebar-hover)'
+                        e.currentTarget.style.color = '#FFD700'
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isActive) {
+                        e.currentTarget.style.backgroundColor = 'transparent'
+                        e.currentTarget.style.color = 'var(--sidebar-text)'
+                      }
+                    }}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <Icon size={24} />
+                    <span>{item.name}</span>
+                  </Link>
+                </li>
+              )
+            })}
+
+            {/* System Admin only menu items (only for abdul.sejini@gmail.com) */}
+            {isSystemAdmin && systemAdminMenuItems.map((item) => {
               const isActive = pathname === item.href
               const Icon = item.icon
               return (
