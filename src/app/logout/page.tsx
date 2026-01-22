@@ -8,12 +8,14 @@ export default function LogoutPage() {
 
   useEffect(() => {
     // Clear user data from localStorage
-    localStorage.removeItem('currentUser')
+    localStorage.removeItem('athlete_hub_current_user')
+    localStorage.removeItem('athlete_hub_original_user')
+    localStorage.removeItem('athlete_hub_switched_user')
     localStorage.removeItem('athlete_hub_sports')
     localStorage.removeItem('athlete_hub_squads')
 
     // Redirect to login page
-    router.push('/login')
+    router.replace('/login')
   }, [router])
 
   return (

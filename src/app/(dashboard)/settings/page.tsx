@@ -415,8 +415,8 @@ export default function SettingsPage() {
 
   const allTabs = [
     { id: 'profile', label: 'Profile', icon: UserIcon, adminOnly: false, systemAdminOnly: false },
-    { id: 'users', label: 'User Management', icon: UserCog, adminOnly: false, systemAdminOnly: false },
-    { id: 'sports', label: 'Sports & Squads', icon: Dumbbell, adminOnly: false, systemAdminOnly: false },
+    { id: 'users', label: 'User Management', icon: UserCog, adminOnly: true, systemAdminOnly: false },
+    { id: 'sports', label: 'Sports & Squads', icon: Dumbbell, adminOnly: true, systemAdminOnly: false },
     { id: 'notifications', label: 'Notifications', icon: Bell, adminOnly: false, systemAdminOnly: false },
     { id: 'security', label: 'Security', icon: Shield, adminOnly: false, systemAdminOnly: false },
     { id: 'appearance', label: 'Appearance', icon: Palette, adminOnly: false, systemAdminOnly: false },
